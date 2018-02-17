@@ -6,7 +6,6 @@
 DHT dht(DHTPIN, DHTTYPE);       // Initialize the sensor
 
 int errors;                     // Number of consecutive errors reading from the sensor
-volatile int state = LOW;
 
 struct sensors_struct {
   int temperature;
@@ -30,12 +29,13 @@ void setup() {
   Serial.println("Start");
 
 
-  pinMode(2,INPUT_PULLUP);
+  pinMode(2, INPUT_PULLUP);
   attachInterrupt(0, interrupt, FALLING);
 }
 
 void(* reset) (void) = 0;
-void interrupt(){
+void interrupt() {
+  Serial.println("Reboot!");
   reset();
 }
 void loop() {
@@ -67,7 +67,7 @@ void getDataFromSensors() {
 
   float humidity = dht.readHumidity();        //Read humidity
   float temperature = dht.readTemperature();  // Read temperature as Celsius
-  float soil = analogRead(SOILPIN);           // Read soil dryness
+  float soil = analogRead(SOILPIN);           // Read soil humidity
 
   if (isnan(humidity) || isnan(temperature)) {       // Check if any reads failed and exit early (to try again).
     Serial.println("Failed to read from DHT sensor!");
@@ -82,7 +82,7 @@ void getDataFromSensors() {
   sensors.temperature = temperature;
   sensors.humidity = humidity;
   sensors.hic = (int)hic;
-  sensors.soil = (int)(soil / 10.23);
+  sensors.soil = (int)(-1 * (soil / 10.23 - 100));
   sprintf(sensors.msg, "t%dh%di%ds%d", sensors.temperature, sensors.humidity, sensors.hic, sensors.soil);
 
   printDebug();
