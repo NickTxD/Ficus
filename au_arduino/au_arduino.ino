@@ -1,4 +1,22 @@
 #include <Wire.h>
+#include "DHT.h"
+#define DHTPIN A0               // Pin to which DHT sensor is connected
+#define SOILPIN A1               // Pin to which soil sensor is connected
+#define DHTTYPE DHT11           // Used sensor type DHT 11
+DHT dht(DHTPIN, DHTTYPE);       // Initialize the sensor
+
+int errors;                     // Number of consecutive errors reading from the sensor
+
+struct sensors_struct {
+  int temperature;
+  int humidity;
+  int hic;
+//int brightness;
+  int soil;
+  char msg[20];
+}sensors;
+
+
 void setup() {
   Wire.begin(8);                 // join i2c bus with address 8
   Wire.onReceive(receiveEvent);  // register receive event
