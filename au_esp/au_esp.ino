@@ -4,6 +4,8 @@
 #include "ficus.h"
 #include <Wire.h>
 
+#define led_pin D0
+
 const byte buflen = 10;
 char buf[buflen];
 sensor_code s;
@@ -20,6 +22,12 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 MqttManager mqtt(&Serial);
 
+void blink_led(){
+  digitalWrite(led_pin, LOW);
+  delay(200);
+  digitalWrite(led_pin, HIGH);
+  }
+
 void setup_wifi() {
   delay(10);
   // We start by connecting to a WiFi network
@@ -32,6 +40,7 @@ void setup_wifi() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    blink_led();
   }
 
   randomSeed(micros());
@@ -59,6 +68,8 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Wire.begin(D1, D2);
+  
+  pinMode(led_pin, OUTPUT);
 
   setup_wifi();
 
@@ -69,6 +80,8 @@ void setup() {
   i = 0;
   s = undefined;
   memset(buf, 0, buflen); // опустошаем буфер
+
+   digitalWrite(led_pin, LOW);
 }
 
 void loop() {
