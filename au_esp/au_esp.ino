@@ -15,7 +15,7 @@ int value, i;
 const char* ssid = "Virgin Wi-Fi true";         // Название  WiFi сети
 const char* password = "181181181181";          // Пароль WiFi сети
 
-const char *mqtt_server = "192.168.1.8"; // Имя сервера MQTT
+const char *mqtt_server = "192.168.1.96"; // Имя сервера MQTT
 const int mqtt_port = 1883; // Порт для подключения к серверу MQTT
 
 WiFiClient espClient;
