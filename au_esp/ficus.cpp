@@ -48,7 +48,9 @@ void MqttManager::send(sensors *data)
   sprintf(message, "%d", data->_brightness); 
   _client->publish("room/brightness", message);  
   sprintf(message, "%d", data->_heat_index); 
-  _client->publish("room/heat_index", message);  
+  _client->publish("room/heat_index", message); 
+  sprintf(message, "%d", data->_arduino); 
+  _client->publish("room/arduino", message);
 
 }
 

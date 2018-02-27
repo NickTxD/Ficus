@@ -17,6 +17,7 @@ struct sensors {
 	int _brightness;
 	int _soil;
   int _heat_index;
+  int _arduino = 65280;
 
 	void set(sensor_code, int);
 };

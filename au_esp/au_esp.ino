@@ -4,32 +4,40 @@
 #include "ficus.h"
 #include <Wire.h>
 
-#define led_pin D0
+#define led_pin D0 
 
 const byte buflen = 10;
 char buf[buflen];
 sensor_code s;
 sensors data;
 int value, i;
+unsigned long timer;
 
 const char* ssid = "Virgin Wi-Fi true";         // Название  WiFi сети
 const char* password = "181181181181";          // Пароль WiFi сети
 
-const char *mqtt_server = "192.168.1.96"; // Имя сервера MQTT
+const char *mqtt_server = "192.168.1.163"; // Имя сервера MQTT
 const int mqtt_port = 1883; // Порт для подключения к серверу MQTT
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 MqttManager mqtt(&Serial);
 
-void blink_led(){
-  digitalWrite(led_pin, LOW);
-  delay(200);
-  digitalWrite(led_pin, HIGH);
+void blink_led(){ 
+  static int prev_time = millis();
+  static bool state = false;
+
+  if (millis() - prev_time > 200)
+  {
+    if (state) { digitalWrite(led_pin, LOW);  }
+    else       { digitalWrite(led_pin, HIGH); }
+    state = !state;
+    prev_time = millis();
   }
+  
+} 
 
 void setup_wifi() {
-  delay(10);
   // We start by connecting to a WiFi network
   Serial.println();
   Serial.print("Connecting to ");
@@ -38,9 +46,8 @@ void setup_wifi() {
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-    blink_led();
+    blink_led(); 
+    delay(100);
   }
 
   randomSeed(micros());
@@ -68,9 +75,12 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Wire.begin(D1, D2);
-  
-  pinMode(led_pin, OUTPUT);
 
+  pinMode(D3, OUTPUT);
+  digitalWrite(D3, LOW);
+
+  pinMode(led_pin, OUTPUT); 
+  
   setup_wifi();
 
   mqtt.init(&client, mqtt_server, mqtt_port);
@@ -81,7 +91,7 @@ void setup() {
   s = undefined;
   memset(buf, 0, buflen); // опустошаем буфер
 
-   digitalWrite(led_pin, LOW);
+  digitalWrite(led_pin, LOW); 
 }
 
 void loop() {
@@ -91,6 +101,7 @@ void loop() {
   int count = Wire.requestFrom(8, 32); /* request & read data of size 32 from slave */
   
   while(Wire.available()){
+    timer = millis();
     char c = Wire.read();
     if (c == 0) break;
     Serial.print(c);
@@ -124,7 +135,18 @@ void loop() {
       i++;
     }
   }
-  Serial.println("");
+
+  if (millis()-timer > 5000)
+  {
+    data._arduino = 0;
+    Serial.println("Rebooting Arduino");
+    digitalWrite(D3, HIGH);
+    delay(3000);
+    digitalWrite(D3, LOW);
+  } else {
+    data._arduino = 65280;  
+  }
+ 
   mqtt.send(&data);
   
   delay(1000);
