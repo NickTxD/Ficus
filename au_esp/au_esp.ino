@@ -91,7 +91,7 @@ void setup() {
   s = undefined;
   memset(buf, 0, buflen); // опустошаем буфер
 
-  digitalWrite(led_pin, LOW); 
+  digitalWrite(led_pin, HIGH); 
 }
 
 void loop() {
@@ -146,8 +146,10 @@ void loop() {
   } else {
     data._arduino = 65280;  
   }
- 
+
+  digitalWrite(led_pin, LOW); 
   mqtt.send(&data);
+  digitalWrite(led_pin, HIGH); 
   
   delay(1000);
 
