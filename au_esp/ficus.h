@@ -1,6 +1,9 @@
 #include <advancedSerial.h>
 #include "ESP8266WiFi.h"
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
 #include <PubSubClient.h>
+#include <Wire.h>
 
 typedef enum sensor_code_e {
 	temperature = 116,
