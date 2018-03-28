@@ -1,4 +1,4 @@
-//#include "ESP8266WiFi.h"
+#include "ESP8266WiFi.h"
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <PubSubClient.h>
@@ -13,7 +13,7 @@ byte codeOn[4] = {0xA0, 0x01, 0x01, 0xA2};
 byte codeOff[4] = {0xA0, 0x01, 0x00, 0xA1};
 
 const char* serverIndex = "LAMP<form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>";
-//ESP8266WebServer server(80);
+ESP8266WebServer server(80);
 
 
 WiFiClient espClient;
@@ -22,7 +22,7 @@ void callback(char* topic, byte* payload, unsigned int length);
 PubSubClient client(mqtt_server, mqtt_port, callback, espClient);
 
 
-/*void setupWebUpdater(void) {
+void setupWebUpdater(void) {
   server.on("/", HTTP_GET, []() {
     server.sendHeader("Connection", "close");
     server.send(200, "text/html", serverIndex);
@@ -56,7 +56,7 @@ PubSubClient client(mqtt_server, mqtt_port, callback, espClient);
   });
   server.begin();
 }
-*/
+
 void setup_wifi() {
 
   WiFi.begin(ssid, password);
@@ -83,12 +83,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
 
   setup_wifi();
 
- // setupWebUpdater();
+  setupWebUpdater();
 
   client.setCallback(callback);
 
@@ -109,7 +108,7 @@ void mqttLoop(){
 
 void loop() {
   
-//  server.handleClient();
+  server.handleClient();
   
   mqttLoop();
   
