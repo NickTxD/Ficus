@@ -1,4 +1,5 @@
 #include "ficus.h"
+#include "index.h"
 
 #define led_pin D0 
 
@@ -38,6 +39,16 @@ void blink_led(){
 }
 
 void setupWebUpdater(void){
+  server.on("/", HTTP_GET, [](){
+    String s = MAIN_page;
+    server.send(200, "text/html", s);
+
+  });
+  server.on("/getData", HTTP_GET, [](){
+    String Data = (String)"Temperature: " + data._temperature + " Humidity: " + data._humidity + " Heat index: " + data._heat_index;
+    server.sendHeader("Connection", "close");
+    server.send(200, "text/plane", Data);
+  });
   server.on("/admin", HTTP_GET, [](){
     server.sendHeader("Connection", "close");
     server.send(200, "text/html", serverIndexAdmin);
